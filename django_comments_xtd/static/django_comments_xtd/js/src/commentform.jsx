@@ -13,7 +13,7 @@ export class CommentForm extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      name: '', email: '', url: '', followup: false, comment: '',
+      name: '', email: '', url: '', comment: '',
       reply_to: this.props.reply_to || 0,
       visited: {name: false, email: false, comment: false},
       errors: {name: false, email: false, comment: false},
@@ -178,30 +178,9 @@ export class CommentForm extends React.Component {
     );
   }
 
-  render_field_followup() {
-    let div_cssc = "checkbox";
-    if(this.state.reply_to > 0)
-      div_cssc += " small";
-    var label = django.gettext("Notify me about follow-up comments");
-    return (
-      <div className="form-group">
-        <div className="col-lg-offset-3 col-md-offset-3 col-lg-7 col-md-7">
-          <div className={div_cssc}>
-            <label htmlFor="id_followup">
-              <input type="checkbox" checked={this.state.followup}
-                     onChange={this.handle_input_change}
-                     name="followup" id="id_followup" />
-              &nbsp;{label}
-            </label>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   reset_form() {
     this.setState({
-      name: '', email: '', url: '', followup: false, comment: '',
+      name: '', email: '', url: '', comment: '',
       visited: {name: false, email: false, comment: false},
       errors: {name: false, email: false, comment: false}
     });
@@ -243,7 +222,6 @@ export class CommentForm extends React.Component {
       name: this.state.name,
       email: this.state.email,
       url: this.state.url,
-      followup: this.state.followup,
       reply_to: this.state.reply_to
     };
     
@@ -342,7 +320,6 @@ export class CommentForm extends React.Component {
     let name = this.render_field_name();
     let mail = this.render_field_email();
     let url = this.render_field_url();
-    let followup = this.render_field_followup();
     let btn_submit_class = "btn btn-primary",
         btn_preview_class = "btn btn-default",
         group_style = {};
@@ -371,7 +348,7 @@ export class CommentForm extends React.Component {
           <div style={{display:'none'}}>
             <input type="text" name="honeypot" value=""/>
           </div>
-          {comment} {name} {mail} {url} {followup}
+          {comment} {name} {mail} {url}
         </fieldset>
         
         <div className="form-group" style={group_style}>
