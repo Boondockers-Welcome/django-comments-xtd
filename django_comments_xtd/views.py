@@ -208,8 +208,7 @@ def notify_comment_followers(comment):
     for instance in previous_comments:
         followers[instance.user_email] = (
             instance.user_name,
-            signed.dumps(instance, compress=True,
-                         extra_key=settings.COMMENTS_XTD_SALT))
+            signing.dumps(instance.pk, salt=settings.COMMENTS_XTD_SALT))
 
     # model = apps.get_model(comment.content_type.app_label,
     #                        comment.content_type.model)
@@ -222,7 +221,7 @@ def notify_comment_followers(comment):
             "django_comments_xtd/email_followup_comment.html")
 
     for email, (name, key) in six.iteritems(followers):
-        mute_url = reverse('comments-xtd-mute', args=[key.decode('utf-8')])
+        mute_url = reverse('comments-xtd-mute', args=[key])
         message_context = {'user_name': name,
                            'comment': comment,
                            # 'content_object': target,
@@ -264,12 +263,11 @@ def reply(request, cid):
 
 def mute(request, key):
     try:
-        comment = signed.loads(str(key),
-                               extra_key=settings.COMMENTS_XTD_SALT)
-    except (ValueError, signed.BadSignature):
+        comment_id = signing.loads(str(key), salt=settings.COMMENTS_XTD_SALT)
+    except (ValueError, signing.BadSignature):
         raise Http404
-    # the comment does exist if the URL was already confirmed, then: Http404
-    if not comment.followup or not _comment_exists(comment):
+    comment = get_object_or_404(get_comment_model(), pk=comment_id)
+    if not comment.followup:
         raise Http404
 
     # Send signal that the comment thread has been muted
