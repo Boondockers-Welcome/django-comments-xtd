@@ -8,8 +8,8 @@ from rest_framework.response import Response
 
 from django_comments_xtd import views
 from django_comments_xtd.api import serializers
-from django_comments_xtd.conf import settings
 from django_comments_xtd.models import XtdComment
+from django_comments_xtd.utils import get_current_site_id
 
 
 class CommentCreate(generics.CreateAPIView):
@@ -26,7 +26,7 @@ class CommentCreate(generics.CreateAPIView):
         if self.resp_dict['code'] == 201:  # The comment has been created.
             return response
         elif self.resp_dict['code'] in [202, 204, 403]:
-            return Response(status=self.resp_dict['code'])
+            return Response({}, status=self.resp_dict['code'])
 
     def perform_create(self, serializer):
         self.resp_dict = serializer.save()
@@ -46,10 +46,11 @@ class CommentList(generics.ListAPIView):
         except ContentType.DoesNotExist:
             qs = XtdComment.objects.none()
         else:
-            qs = XtdComment.objects.filter(content_type=content_type,
-                                           object_pk=int(object_pk_arg),
-                                           site__pk=settings.SITE_ID,
-                                           is_public=True)
+            qs = XtdComment.objects.filter(
+                content_type=content_type,
+                object_pk=object_pk_arg,
+                site__pk=get_current_site_id(self.request),
+                is_public=True)
         return qs
 
 
@@ -63,7 +64,7 @@ class CommentCount(generics.GenericAPIView):
         app_label, model = content_type_arg.split("-")
         content_type = ContentType.objects.get_by_natural_key(app_label, model)
         qs = XtdComment.objects.filter(content_type=content_type,
-                                       object_pk=int(object_pk_arg),
+                                       object_pk=object_pk_arg,
                                        is_public=True)
         return qs
 

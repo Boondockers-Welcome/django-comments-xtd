@@ -9,10 +9,7 @@ from django.core import signing
 from django.http import Http404, HttpResponseForbidden
 from django.shortcuts import get_object_or_404, redirect, render
 from django.template import loader
-try:
-    from django.urls import reverse
-except ImportError:
-    from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 from django.views.decorators.csrf import csrf_protect
 from django.views.generic import ListView
@@ -28,7 +25,8 @@ from django_comments_xtd.conf import settings
 from django_comments_xtd.models import (TmpXtdComment,
                                         MaxThreadLevelExceededException,
                                         LIKEDIT_FLAG, DISLIKEDIT_FLAG)
-from django_comments_xtd.utils import send_mail, has_app_model_option
+from django_comments_xtd.utils import (get_current_site_id, send_mail,
+                                       has_app_model_option)
 
 
 XtdComment = get_comment_model()
@@ -103,10 +101,7 @@ def on_comment_was_posted(sender, comment, request, **kwargs):
     if settings.COMMENTS_APP != "django_comments_xtd":
         return False
     if comment.user:
-        try:
-            user_is_authenticated = comment.user.is_authenticated()
-        except TypeError:  # Django >= 1.11
-            user_is_authenticated = comment.user.is_authenticated
+        user_is_authenticated = comment.user.is_authenticated
     else:
         user_is_authenticated = False
 
@@ -145,7 +140,7 @@ def sent(request, using=None):
     else:
         if (
                 request.is_ajax() and comment.user and
-                comment.user.is_authenticated()
+                comment.user.is_authenticated
         ):
             if comment.is_public:
                 template_arg = [
@@ -306,8 +301,9 @@ def flag(request, comment_id, next=None):
         comment
             the flagged `comments.comment` object
     """
-    comment = get_object_or_404(get_comment_model(),
-                                pk=comment_id, site__pk=settings.SITE_ID)
+    comment = get_object_or_404(
+        get_comment_model(), pk=comment_id,
+        site__pk=get_current_site_id(request))
     if not has_app_model_option(comment)['allow_flagging']:
         ctype = ContentType.objects.get_for_model(comment.content_object)
         raise Http404("Comments posted to instances of '%s.%s' are not "
@@ -339,7 +335,7 @@ def like(request, comment_id, next=None):
             the flagged `comments.comment` object
     """
     comment = get_object_or_404(get_comment_model(), pk=comment_id,
-                                site__pk=settings.SITE_ID)
+                                site__pk=get_current_site_id(request))
     if not has_app_model_option(comment)['allow_feedback']:
         ctype = ContentType.objects.get_for_model(comment.content_object)
         raise Http404("Comments posted to instances of '%s.%s' are not "
@@ -373,7 +369,7 @@ def dislike(request, comment_id, next=None):
             the flagged `comments.comment` object
     """
     comment = get_object_or_404(get_comment_model(), pk=comment_id,
-                                site__pk=settings.SITE_ID)
+                                site__pk=get_current_site_id(request))
     if not has_app_model_option(comment)['allow_feedback']:
         ctype = ContentType.objects.get_for_model(comment.content_object)
         raise Http404("Comments posted to instances of '%s.%s' are not "
@@ -454,11 +450,12 @@ class XtdCommentListView(ListView):
         content_types = self.get_content_types()
         if content_types is None:
             return None
-        return XtdComment.objects\
-                         .for_content_types(content_types,
-                                            site=settings.SITE_ID)\
-                         .filter(is_removed=False)\
-                         .order_by('submit_date')
+        return XtdComment.objects.for_content_types(
+                content_types,
+                site=get_current_site_id(self.request)
+            )\
+            .filter(is_removed=False)\
+            .order_by('submit_date')
 
     def get_context_data(self, **kwargs):
         context = super(XtdCommentListView, self).get_context_data(**kwargs)

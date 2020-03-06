@@ -1,5 +1,69 @@
 # Change Log
 
+## [2.4.3] - 2020-01-26
+
+	* Fixes issue on the ContentType that happens when sending post
+	request with empty data. (PR: #137) (thanks to @dvorberg).
+	* Adds German translations,  (thanks to @dvorberg).
+
+## [2.4.2] - 2019-12-25
+
+    * Adds Django 3.0 compatibility thanks to Sergey Ivanychev (@ivanychev).
+    * Adds Norwegian translations thanks to Yngve Høiseth (@yhoiseth).
+
+
+## [2.4.1] - 2019-09-30
+
+    * Allow changing the "d" parameter when requesting a gravatar,
+      thanks to @pylixm (PR: 100).
+    * Avoid requiring the SITE_ID, thanks to @gassan (PR: 125).
+
+## [2.4.0] - 2019-02-19
+
+    New minor release thanks to Mandeep Gill with the following changes:
+
+    * Adds support for non-int based object_pk, for instead when using UUIDs or
+      HashIds as the primary key on a model (closes #112).
+    * Refactors the commentbox props generation into a separate function so can
+      be used from the webapi for use with rest_framework/API-only backends that
+      don't make use of server-side templates.
+    * Adds a pyproject.yaml for use with `poetry` (https://poetry.eustace.io)
+      and new pip environments (PEP 518).
+
+## [2.3.1] - 2019-01-08
+
+    * Fixes issue #116.
+    * Updates package.json JavaScript dependencies:
+       * babel-cli from 6.24.1 to 6.26.0.
+       * jquery from 3.2.1 to 3.3.1.
+
+## [2.3.0] - 2018-11-29
+
+    * Upgrades Twitter-Bootstrap from v3 to v4.
+    * Fixes issue with tutorial fixtures (bug #114).
+    * Upgrade all JavaScript dependencies. Check packages.json for details.
+      The major changes are:
+       * ReactJS updates from 15.5 to 16.5.
+       * Babel updates from 6 to 7.
+       * Webpack from 2.4.1 to 4.21.0.
+       * Bootstrap from 3.3.7 to 4.1.3.
+    * Updates webpack.config.js.
+    * Demo sites and tutorial have been adapted to Twitter Bootstrap v4.
+    * Fixes issues #94, #108, #111.
+
+## [2.2.1] - 2018-10-06
+
+    * Resolves deprecation warnings and adopt recommendations in unit tests.
+    * Fixes demo sites so that they work with Django 1.11, Django 2.0 and
+      Django 2.1.
+
+## [2.2.0] - 2018-08-12
+
+    * Adds support for Django 2.1.
+    * Drops support for Django < 1.11 as it depends on django-contrib-comments
+      which dropped support too.
+    * Fixes issue 104 (on lack of Django 2.1 support).
+
 ## [2.1.0] - 2018-02-13
 
     * Fixes issues #76, #86 and #87.

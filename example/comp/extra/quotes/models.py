@@ -2,9 +2,8 @@ from __future__ import unicode_literals
 
 import django
 from django.db import models
-from django.db.models import permalink
+from django.urls import reverse
 from django.utils import timezone
-from django.utils.encoding import python_2_unicode_compatible
 
 
 from django_comments_xtd.moderation import moderator, SpamModerator
@@ -17,7 +16,6 @@ class PublicManager(models.Manager):
         return self.get_queryset().filter(publish__lte=timezone.now())
 
 
-@python_2_unicode_compatible
 class Quote(models.Model):
     """Quote, that accepts comments."""
 
@@ -38,9 +36,8 @@ class Quote(models.Model):
     def __str__(self):
         return self.title
 
-    @permalink
     def get_absolute_url(self):
-        return ('quotes-quote-detail', (), {'slug': self.slug})
+        return reverse('quotes-quote-detail', kwargs={'slug': self.slug})
 
 
 class QuoteCommentModerator(SpamModerator):
