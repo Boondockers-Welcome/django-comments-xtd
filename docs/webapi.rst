@@ -10,13 +10,13 @@ django-comments-xtd uses django-rest-framework_ to expose a Web API that provide
 
 There are 5 methods available to perform the following actions:
 
- #. Post a new comment.
- #. Retrieve the list of comments posted to a given content type and object ID.
- #. Retrieve the number of comments posted to a given content type and object ID.
- #. Post user's like/dislike feedback.
- #. Post user's removal suggestions.
+#. Post a new comment.
+#. Retrieve the list of comments posted to a given content type and object ID.
+#. Retrieve the number of comments posted to a given content type and object ID.
+#. Post user's like/dislike feedback.
+#. Post user's removal suggestions.
 
-Finally there is the ability to generate a view action in ``django_comments_xtd.api.frontend`` to return the commentbox props as used by the :doc:`javascript` plugin for use with an existing `django-rest-framework <http://www.django-rest-framework.org/>`_ project.
+Finally there is the ability to generate a view action in ``django_comments_xtd.api.frontend`` to return the commentbox props as used by the :doc:`javascript` for use with an existing `django-rest-framework <http://www.django-rest-framework.org/>`_ project.
 
 .. contents:: Table of Contents
    :depth: 1
@@ -26,11 +26,11 @@ Finally there is the ability to generate a view action in ``django_comments_xtd.
 Post a new comment
 ==================
 
- | URL name: **comments-xtd-api-create**
- | Mount point: **<comments-mount-point>/api/comment/**
- | HTTP Methods: POST
- | HTTP Responses: 201, 202, 204, 403
- | Serializer: ``django_comments_xtd.api.serializers.WriteCommentSerializer``
+:URL name: **comments-xtd-api-create**
+:Mount point: **<comments-mount-point>/api/comment/**
+:HTTP Methods: POST
+:HTTP Responses: 201, 202, 204, 403
+:Serializer: ``django_comments_xtd.api.serializers.WriteCommentSerializer``
 
 This method expects the same fields submitted in a regular django-comments-xtd
 form. The serializer uses the function ``django_comments.get_form`` to verify
@@ -38,10 +38,10 @@ data validity.
 
 Meaning of the HTTP Response codes:
 
- * **201**: Comment created.
- * **202**: Comment in moderation.
- * **204**: Comment confirmation has been sent by mail.
- * **403**: Comment rejected, as in :ref:`disallow`.
+* **201**: Comment created.
+* **202**: Comment in moderation.
+* **204**: Comment confirmation has been sent by mail.
+* **403**: Comment rejected, as in :ref:`disallow`.
 
 .. note::
 
@@ -68,12 +68,12 @@ Example of authorization
 
 In this section we go through the changes that will enable posting comments via the web API in the :ref:`example-simple`. We have to:
 
- 1. Modify the settings module.
- 2. Modify the urls module to allow login and logout via DRF's api-auth.
- 3. Create a new authentication class, in this case it will be an authentication scheme based on DRF's `Custom authentication <https://www.django-rest-framework.org/api-guide/authentication/#custom-authentication>`_, but you could use any other one.
- 4. Create a new receiver function for the signal ``should_request_be_authorized``.
- 5. Post a test comment as a visitor.
- 6. Post a test comment as a signed in user.
+#. Modify the settings module.
+#. Modify the urls module to allow login and logout via DRF's api-auth.
+#. Create a new authentication class, in this case it will be an authentication scheme based on DRF's `Custom authentication <https://www.django-rest-framework.org/api-guide/authentication/#custom-authentication>`_, but you could use any other one.
+#. Create a new receiver function for the signal ``should_request_be_authorized``.
+#. Post a test comment as a visitor.
+#. Post a test comment as a signed in user.
 
 Modify the settings module
 **************************
@@ -82,24 +82,24 @@ We will modify the ``simple/settings.py`` module to add ``rest_framework`` to ``
 
 Append the code to your ``simple/settings.py`` module:
 
-   .. code-block:: python
+.. code-block:: python
 
-      INSTALLED_APPS = [
-         ...
-         'rest_framework',
-         'simple.articles',
-         ...
-      ]
+    INSTALLED_APPS = [
+        ...
+        'rest_framework',
+        'simple.articles',
+        ...
+    ]
 
-      # import os, binascii; binascii.hexlify(os.urandom(20)).decode()
-      MY_DRF_AUTH_TOKEN = "08d9fd42468aebbb8087b604b526ff0821ce4525"
+    # import os, binascii; binascii.hexlify(os.urandom(20)).decode()
+    MY_DRF_AUTH_TOKEN = "08d9fd42468aebbb8087b604b526ff0821ce4525"
 
-      REST_FRAMEWORK = {
-          'DEFAULT_AUTHENTICATION_CLASSES': [
-              'rest_framework.authentication.SessionAuthentication',
-              'simple.apiauth.APIRequestAuthentication'
-         ]
-      }
+    REST_FRAMEWORK = {
+        'DEFAULT_AUTHENTICATION_CLASSES': [
+            'rest_framework.authentication.SessionAuthentication',
+            'simple.apiauth.APIRequestAuthentication'
+        ]
+    }
 
 Modify the urls module
 **********************
@@ -125,38 +125,38 @@ In the particular case of this class we don't want to authenticate the user but 
 
 Create the module ``simple/apiauth.py`` with the following content:
 
-   .. code-block:: python
+.. code-block:: python
 
-      from django.contrib.auth.models import AnonymousUser
+    from django.contrib.auth.models import AnonymousUser
 
-      from rest_framework import HTTP_HEADER_ENCODING, authentication, exceptions
+    from rest_framework import HTTP_HEADER_ENCODING, authentication, exceptions
 
 
-      class APIRequestAuthentication(authentication.BaseAuthentication):
-          def authenticate(self, request):
-              auth = request.META.get('HTTP_AUTHORIZATION', b'')
-              if isinstance(auth, str):
-                  auth = auth.encode(HTTP_HEADER_ENCODING)
+    class APIRequestAuthentication(authentication.BaseAuthentication):
+        def authenticate(self, request):
+            auth = request.META.get('HTTP_AUTHORIZATION', b'')
+            if isinstance(auth, str):
+                auth = auth.encode(HTTP_HEADER_ENCODING)
 
-              pieces = auth.split()
-              if not pieces or pieces[0].lower() != b'token':
-                  return None
+            pieces = auth.split()
+            if not pieces or pieces[0].lower() != b'token':
+                return None
 
-              if len(pieces) == 1:
-                  msg = _("Invalid token header. No credentials provided.")
-                  raise exceptions.AuthenticationFailed(msg)
-              elif len(pieces) > 2:
-                  msg = _("Invalid token header."
-                          "Token string should not contain spaces.")
-                  raise exceptions.AuthenticationFailed(msg)
+            if len(pieces) == 1:
+                msg = _("Invalid token header. No credentials provided.")
+                raise exceptions.AuthenticationFailed(msg)
+            elif len(pieces) > 2:
+                msg = _("Invalid token header."
+                        "Token string should not contain spaces.")
+                raise exceptions.AuthenticationFailed(msg)
 
-              try:
-                  auth = pieces[1].decode()
-              except UnicodeError:
-                  msg = _("Invalid token header. "
-                      "Token string should not contain invalid characters.")
+            try:
+                auth = pieces[1].decode()
+            except UnicodeError:
+                msg = _("Invalid token header. "
+                    "Token string should not contain invalid characters.")
 
-              return (AnonymousUser(), auth)
+            return (AnonymousUser(), auth)
 
 The class doesn't validate the token. We will do it with the receiver function in the next section.
 
@@ -167,21 +167,21 @@ Now let's create the receiver function. The receiver function will be called whe
 
 Append the following code to the ``simple/articles/models.py`` module:
 
-   .. code-block:: python
+.. code-block:: python
 
-      from django.conf import settings
-      from django.dispatch import receiver
-      from django_comments_xtd.signals import should_request_be_authorized
+    from django.conf import settings
+    from django.dispatch import receiver
+    from django_comments_xtd.signals import should_request_be_authorized
 
-      [...]
+    [...]
 
-      @receiver(should_request_be_authorized)
-      def my_callback(sender, comment, request, **kwargs):
-          if (
-              (request.user and request.user.is_authenticated) or
-              (request.auth and request.auth == settings.MY_DRF_AUTH_TOKEN)
-          ):
-              return True
+    @receiver(should_request_be_authorized)
+    def my_callback(sender, comment, request, **kwargs):
+        if (
+            (request.user and request.user.is_authenticated) or
+            (request.auth and request.auth == settings.MY_DRF_AUTH_TOKEN)
+        ):
+            return True
 
 The left part of the *if* is True when the ``rest_framework.authentication.SessionAuthentication`` recognizes the user posting the comment as a signed in user. However if the user sending the comment is a mere visitor and the request contains a valid **Authorization** token, then our class ``simple.apiauth.APIRequestAuthentication`` will have put the auth token in the request. If the auth token contains the value given in the setting **MY_DRF_AUTH_TOKEN** we can considered the request authorized.
 
@@ -192,23 +192,27 @@ Now with the previous changes in place launch the Django development server and 
 
 These are the fields that have to be sent:
 
- * **content_type**: A string with the content_type ie: ``content_type="articles.article"``.
- * **object_pk**: The object ID we are posting the comment to.
- * **name**: The name of the person posting the comment.
- * **email**: The email address of the person posting the comment. It's required when the comment has to be confirmed via email.
- * **followup**: Boolean to indicate whether the user wants to receive follow-up notification via email.
- * **reply_to**: When threading is enabled, reply_to is the comment ID being responded with the comment being sent. If comments are not threaded the reply_to must be 0.
- * **comment**: The content of the comment.
+* **content_type**: A string with the content_type ie: ``content_type="articles.article"``.
+* **object_pk**: The object ID we are posting the comment to.
+* **name**: The name of the person posting the comment.
+* **email**: The email address of the person posting the comment. It's required when the comment has to be confirmed via email.
+* **followup**: Boolean to indicate whether the user wants to receive follow-up notification via email.
+* **reply_to**: When threading is enabled, reply_to is the comment ID being responded with the comment being sent. If comments are not threaded the reply_to must be 0.
+* **comment**: The content of the comment.
 
 I will use the excellent `HTTPie <https://httpie.org/docs>`_ command line client:
 
-   .. code-block:: bash
+.. code-block:: bash
 
-    $ http POST http://localhost:8000/comments/api/comment/ \
+    http POST http://localhost:8000/comments/api/comment/ \
            'Authorization:Token 08d9fd42468aebbb8087b604b526ff0821ce4525' \
            content_type="articles.article" object_pk=1 name="Joe Bloggs" \
            followup=false reply_to=0 email="joe@bloggs.com" \
            comment="This is the body, the actual comment..."
+
+Which should result in:
+
+.. code-block::
 
     HTTP/1.1 204 No Content
     Allow: POST, OPTIONS
@@ -225,9 +229,13 @@ Post a test comment as a signed in user
 
 To post a comment as a logged in user we first have to obtain the csrftoken:
 
-   .. code-block:: bash
+.. code-block:: bash
 
-    $ http localhost:8000/api-auth/login/ --session=session1 -h
+    http localhost:8000/api-auth/login/ --session=session1 -h
+
+Resulting in:
+
+.. code-block::
 
     HTTP/1.1 200 OK
     Cache-Control: max-age=0, no-cache, no-store, must-revalidate, private
@@ -242,11 +250,15 @@ To post a comment as a logged in user we first have to obtain the csrftoken:
 
 Copy the value of csrftoken and attach it to the login HTTP request:
 
-   .. code-block:: bash
+.. code-block:: bash
 
-    $ http -f POST localhost:8000/api-auth/login/ username=admin password=admin \
-              X-CSRFToken:nEJczcG2M3LrcxIKiHbkxDFy2gmplPtn87pAFhp0CQz47TvZ58v8S2eCpWD9Zadm \
-              --session=session1
+    http -f POST localhost:8000/api-auth/login/ username=admin password=admin \
+        X-CSRFToken:nEJczcG2M3LrcxIKiHbkxDFy2gmplPtn87pAFhp0CQz47TvZ58v8S2eCpWD9Zadm \
+        --session=session1
+
+Which results in:
+
+.. code-block::
 
     HTTP/1.1 302 Found
     Cache-Control: max-age=0, no-cache, no-store, must-revalidate, private
@@ -263,14 +275,18 @@ Copy the value of csrftoken and attach it to the login HTTP request:
 
 Finally send the comment with the new csrftoken:
 
-   .. code-block:: bash
+.. code-block:: bash
 
-    $ http POST http://localhost:8000/comments/api/comment/ \
+    http POST http://localhost:8000/comments/api/comment/ \
                 content_type="articles.article" object_pk=1 followup=false \
                 reply_to=0 comment="This is the body, the actual comment..." \
                 name="Administrator" email="admin@example.com" \
                 X-CSRFToken:z3FtVTPWudwYrWrqSQLOb2HZ0JNAmoA3P8M4RSDhTtJr7LrSVVAbfDp847Xetuwm \
                 --session=session1
+
+Which results in:
+
+.. code-block::
 
     HTTP/1.1 201 Created
     Allow: POST, OPTIONS
@@ -299,188 +315,224 @@ The comment must be already listed in the page, sent as the user ``admin``.
 Retrieve comment list
 =====================
 
- | URL name: **comments-xtd-api-list**
- | Mount point: **<comments-mount-point>/api/<content-type>/<object-pk>/**
- |        <content-type> is a hyphen separated lowecase pair app_label-model
- |        <object-pk> is an integer representing the object ID.
- | HTTP Methods: GET
- | HTTP Responses: 200
- | Serializer: ``django_comments_xtd.api.serializers.ReadCommentSerializer``
+:URL name: **comments-xtd-api-list**
+:Mount point: **<comments-mount-point>/api/<content-type>/<object-pk>/**
+:<content-type>: is a hyphen separated lowecase pair app_label-model
+:<object-pk>: is an integer representing the object ID.
+:HTTP Methods: GET
+:HTTP Responses: 200
+:Serializer: ``django_comments_xtd.api.serializers.ReadCommentSerializer``
 
 This method retrieves the list of comments posted to a given content type and object ID:
 
-   .. code-block:: bash
+.. code-block:: bash
 
-       $ http http://localhost:8000/comments/api/blog-post/4/
+    http http://localhost:8000/comments/api/blog-post/4/
 
-       HTTP/1.0 200 OK
-       Allow: GET, HEAD, OPTIONS
-       Content-Length: 2707
-       Content-Type: application/json
-       Date: Tue, 23 May 2017 11:59:09 GMT
-       Server: WSGIServer/0.2 CPython/3.6.0
-       Vary: Accept, Cookie
-       X-Frame-Options: SAMEORIGIN
+Which results in:
 
-       [
-           {
-               "allow_reply": true,
-               "comment": "Integer erat leo, ...",
-               "flags": [
-                   {
-                       "flag": "like",
-                       "id": 1,
-                       "user": "admin"
-                   },
-                   {
-                       "flag": "like",
-                       "id": 2,
-                       "user": "fulanito"
-                   },
-                   {
-                       "flag": "removal",
-                       "id": 2,
-                       "user": "fulanito"
-                   }
-               ],
-               "id": 10,
-               "is_removed": false,
-               "level": 0,
-               "parent_id": 10,
-               "permalink": "/comments/cr/8/4/#c10",
-               "submit_date": "May 18, 2017, 9:19 AM",
-               "user_avatar": "http://www.gravatar.com/avatar/7dad9576 ...",
-               "user_moderator": true,
-               "user_name": "Joe Bloggs",
-               "user_url": ""
-           },
-           {
-               ...
-           }
-       ]
+.. code-block::
+
+    HTTP/1.0 200 OK
+    Allow: GET, HEAD, OPTIONS
+    Content-Length: 2707
+    Content-Type: application/json
+    Date: Tue, 23 May 2017 11:59:09 GMT
+    Server: WSGIServer/0.2 CPython/3.6.0
+    Vary: Accept, Cookie
+    X-Frame-Options: SAMEORIGIN
+
+    [
+        {
+            "allow_reply": true,
+            "comment": "Integer erat leo, ...",
+            "flags": [
+                {
+                    "flag": "like",
+                    "id": 1,
+                    "user": "admin"
+                },
+                {
+                    "flag": "like",
+                    "id": 2,
+                    "user": "fulanito"
+                },
+                {
+                    "flag": "removal",
+                    "id": 2,
+                    "user": "fulanito"
+                }
+            ],
+            "id": 10,
+            "is_removed": false,
+            "level": 0,
+            "parent_id": 10,
+            "permalink": "/comments/cr/8/4/#c10",
+            "submit_date": "May 18, 2017, 9:19 AM",
+            "user_avatar": "http://www.gravatar.com/avatar/7dad9576 ...",
+            "user_moderator": true,
+            "user_name": "Joe Bloggs",
+            "user_url": ""
+        },
+        {
+            ...
+        }
+    ]
+
+
+Modify ``submit_date``'s format
+-------------------------------
+
+The ``submit_date`` field is rendered by default using the datetime format string provided in the ``DATETIME_FORMAT`` setting. You could override that setting for django_comments_xtd using the setting ``COMMENTS_XTD_API_DATETIME_FORMAT``.
+
+Use Django's `date formatting characters <https://docs.djangoproject.com/en/5.0/ref/templates/builtins/#std-templatefilter-date>`_ to feed your ``DATETIME_FORMAT`` setting and produce the adecuate output for the ``submit_date`` in your API:
+
+.. code-block:: python
+
+    COMMENTS_XTD_API_DATETIME_FORMAT = "Y-b-d H:i:s O"
 
 
 Retrieve comments count
 =======================
 
- | URL name: **comments-xtd-api-count**
- | Mount point: **<comments-mount-point>/api/<content-type>/<object-pk>/count/**
- |        <content-type> is a hyphen separated lowecase pair app_label-model
- |        <object-pk> is an integer representing the object ID.
- | HTTP Methods: GET
- | HTTP Responses: 200
- | Serializer: ``django_comments_xtd.api.serializers.ReadCommentSerializer``
+:URL name: **comments-xtd-api-count**
+:Mount point: **<comments-mount-point>/api/<content-type>/<object-pk>/count/**
+:<content-type>: is a hyphen separated lowecase pair app_label-model
+:<object-pk>: is an integer representing the object ID.
+:HTTP Methods: GET
+:HTTP Responses: 200
+:Serializer: ``django_comments_xtd.api.serializers.ReadCommentSerializer``
 
 This method retrieves the number of comments posted to a given content type and object ID:
 
-   .. code-block:: bash
+.. code-block:: bash
 
-       $ http http://localhost:8000/comments/api/blog-post/4/count/
+    http http://localhost:8000/comments/api/blog-post/4/count/
 
-       HTTP/1.0 200 OK
-       Allow: GET, HEAD, OPTIONS
-       Content-Length: 11
-       Content-Type: application/json
-       Date: Tue, 23 May 2017 12:06:38 GMT
-       Server: WSGIServer/0.2 CPython/3.6.0
-       Vary: Accept, Cookie
-       X-Frame-Options: SAMEORIGIN
+That returns:
 
-       {
-           "count": 4
-       }
+.. code-block::
+
+    HTTP/1.0 200 OK
+    Allow: GET, HEAD, OPTIONS
+    Content-Length: 11
+    Content-Type: application/json
+    Date: Tue, 23 May 2017 12:06:38 GMT
+    Server: WSGIServer/0.2 CPython/3.6.0
+    Vary: Accept, Cookie
+    X-Frame-Options: SAMEORIGIN
+
+    {
+        "count": 4
+    }
 
 
 Post like/dislike feedback
 ==========================
 
- | URL name: **comments-xtd-api-feedback**
- | Mount point: **<comments-mount-point>/api/feedback/**
- | HTTP Methods: POST
- | HTTP Responses: 201, 204, 403
- | Serializer: ``django_comments_xtd.api.serializers.FlagSerializer``
+:URL name: **comments-xtd-api-feedback**
+:Mount point: **<comments-mount-point>/api/feedback/**
+:HTTP Methods: POST
+:HTTP Responses: 201, 204, 403
+:Serializer: ``django_comments_xtd.api.serializers.FlagSerializer``
 
 This method toggles flags like/dislike for a comment. Successive calls set/unset the like/dislike flag:
 
-   .. code-block:: bash
+.. code-block:: bash
 
-       $ http -a admin:admin POST http://localhost:8000/comments/api/feedback/ comment=10 flag="like"
+    http -a admin:admin POST http://localhost:8000/comments/api/feedback/ comment=10 flag="like"
 
-       HTTP/1.0 201 Created
-       Allow: POST, OPTIONS
-       Content-Length: 34
-       Content-Type: application/json
-       Date: Tue, 23 May 2017 12:27:00 GMT
-       Server: WSGIServer/0.2 CPython/3.6.0
-       Vary: Accept, Cookie
-       X-Frame-Options: SAMEORIGIN
+That returns:
 
-       {
-           "comment": 10,
-           "flag": "I liked it"
-       }
+.. code-block:
+
+    HTTP/1.0 201 Created
+    Allow: POST, OPTIONS
+    Content-Length: 34
+    Content-Type: application/json
+    Date: Tue, 23 May 2017 12:27:00 GMT
+    Server: WSGIServer/0.2 CPython/3.6.0
+    Vary: Accept, Cookie
+    X-Frame-Options: SAMEORIGIN
+
+    {
+        "comment": 10,
+        "flag": "I liked it"
+    }
 
 Calling it again unsets the *"I liked it"* flag:
 
-   .. code-block:: bash
+.. code-block:: bash
 
-       $ http -a admin:admin POST http://localhost:8000/comments/api/feedback/ comment=10 flag="like"
+    http -a admin:admin POST http://localhost:8000/comments/api/feedback/ comment=10 flag="like"
 
-       HTTP/1.0 204 No Content
-       Allow: POST, OPTIONS
-       Content-Length: 0
-       Date: Tue, 23 May 2017 12:26:56 GMT
-       Server: WSGIServer/0.2 CPython/3.6.0
-       Vary: Accept, Cookie
-       X-Frame-Options: SAMEORIGIN
+Resulting in:
+
+.. code-block::
+
+    HTTP/1.0 204 No Content
+    Allow: POST, OPTIONS
+    Content-Length: 0
+    Date: Tue, 23 May 2017 12:26:56 GMT
+    Server: WSGIServer/0.2 CPython/3.6.0
+    Vary: Accept, Cookie
+    X-Frame-Options: SAMEORIGIN
 
 It requires the user to be logged in:
 
-   .. code-block:: bash
+.. code-block:: bash
 
-       $ http POST http://localhost:8000/comments/api/feedback/ comment=10 flag="like"
+    http POST http://localhost:8000/comments/api/feedback/ comment=10 flag="like"
 
-       HTTP/1.0 403 Forbidden
-       Allow: POST, OPTIONS
-       Content-Length: 58
-       Content-Type: application/json
-       Date: Tue, 23 May 2017 12:27:31 GMT
-       Server: WSGIServer/0.2 CPython/3.6.0
-       Vary: Accept, Cookie
-       X-Frame-Options: SAMEORIGIN
+Resulting in:
 
-       {
-           "detail": "Authentication credentials were not provided."
-       }
+.. code-block::
+
+    HTTP/1.0 403 Forbidden
+    Allow: POST, OPTIONS
+    Content-Length: 58
+    Content-Type: application/json
+    Date: Tue, 23 May 2017 12:27:31 GMT
+    Server: WSGIServer/0.2 CPython/3.6.0
+    Vary: Accept, Cookie
+    X-Frame-Options: SAMEORIGIN
+
+    {
+        "detail": "Authentication credentials were not provided."
+    }
 
 
 Post removal suggestions
 ========================
 
- | URL name: **comments-xtd-api-flag**
- | Mount point: **<comments-mount-point>/api/flag/**
- | HTTP Methods: POST
- | HTTP Responses: 201, 403
- | Serializer: ``django_comments_xtd.api.serializers.FlagSerializer``
+:URL name: **comments-xtd-api-flag**
+:Mount point: **<comments-mount-point>/api/flag/**
+:HTTP Methods: POST
+:HTTP Responses: 201, 403
+:Serializer: ``django_comments_xtd.api.serializers.FlagSerializer``
 
 This method sets the *removal suggestion* flag on a comment. Once created for a given user successive calls return 201 but the flag object is not created again.
 
-   .. code-block:: bash
+.. code-block:: bash
 
-       $ http POST http://localhost:8000/comments/api/flag/ comment=10 flag="report"
+    http POST http://localhost:8000/comments/api/flag/ comment=10 flag="report"
 
-       HTTP/1.0 201 Created
-       Allow: POST, OPTIONS
-       Content-Length: 42
-       Content-Type: application/json
-       Date: Tue, 23 May 2017 12:35:02 GMT
-       Server: WSGIServer/0.2 CPython/3.6.0
-       Vary: Accept, Cookie
-       X-Frame-Options: SAMEORIGIN
+Which results in:
 
-       {
-           "comment": 10,
-           "flag": "removal suggestion"
-       }
+.. code-block::
+
+    HTTP/1.0 201 Created
+    Allow: POST, OPTIONS
+    Content-Length: 42
+    Content-Type: application/json
+    Date: Tue, 23 May 2017 12:35:02 GMT
+    Server: WSGIServer/0.2 CPython/3.6.0
+    Vary: Accept, Cookie
+    X-Frame-Options: SAMEORIGIN
+
+    {
+        "comment": 10,
+        "flag": "removal suggestion"
+    }
 
 As the previous method, it requires the user to be logged in.

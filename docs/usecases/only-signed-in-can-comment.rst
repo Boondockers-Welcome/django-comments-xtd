@@ -4,6 +4,8 @@
 Only signed in users can comment
 ================================
 
+.. _logout: http://localhost:8000/admin/logout
+
 This page describes how to setup django-comments-xtd so that only registered
 users can write comments or flag them. That means mere visitors will be
 able to see the comments but won't be able to send them. In order to do so a
@@ -35,16 +37,16 @@ testing comments to see that visitors and registered users can comment, add the
 :setting:`COMMENTS_XTD_APP_MODEL_OPTIONS` entry at the bottom of the
 ``settings.py`` module to allow only registered users to post comments:
 
-   .. code-block:: python
+.. code-block:: python
 
-       COMMENTS_XTD_APP_MODEL_OPTIONS = {
-           'default': {
-               'allow_flagging': False,
-               'allow_feedback': False,
-               'show_feedback': False,
-               'who_can_post': 'users'
-           }
-       }
+    COMMENTS_XTD_APP_MODEL_OPTIONS = {
+        'default': {
+            'allow_flagging': False,
+            'allow_feedback': False,
+            'show_feedback': False,
+            'who_can_post': 'users'
+        }
+    }
 
 Once the change is saved and Django has reloaded check that, as before,
 registered users can comment without issues, however visitors get the HTTP-400
@@ -59,7 +61,7 @@ As an example, here is a modified version of the ``article_detail.html``
 template of the Simple project that displays a message with a link to the login
 page when the user is not authenticated:
 
-   .. code-block:: html+django
+.. code-block:: html+django
 
     [...]
 
@@ -108,16 +110,16 @@ the :setting:`COMMENTS_XTD_APP_MODEL_OPTIONS` at the bottom of the
 ``settings.py`` and append the pair ``'who_can_post': 'users'`` to the
 quotes app dictionary:
 
-   .. code-block:: python
+.. code-block:: python
 
-       COMMENTS_XTD_APP_MODEL_OPTIONS = {
-           'quotes.quote': {
-               'allow_flagging': True,
-               'allow_feedback': True,
-               'show_feedback': True,
-               'who_can_post': 'users'
-           }
-       }
+    COMMENTS_XTD_APP_MODEL_OPTIONS = {
+        'quotes.quote': {
+            'allow_flagging': True,
+            'allow_feedback': True,
+            'show_feedback': True,
+            'who_can_post': 'users'
+        }
+    }
 
 Once changes are saved and Django has restarted see that registered users can
 comment without issues. However visitors get the HTTP-400 page (Bad Request).
@@ -127,7 +129,7 @@ have to edit the ``templates/quotes/quote_detail.html`` file and be sure
 that the block that renders the comment form is not displayed when the user
 browsing the site is a mere visitor. The following changes will make it:
 
-   .. code-block:: html+django
+.. code-block:: html+django
 
     [...] around line 41...
 
@@ -179,8 +181,7 @@ adding the pair ``'who_can_post': 'users'`` to the ``'articles.article'``
 dictionary entry of the :setting:`COMMENTS_XTD_APP_MODEL_OPTIONS`, as we did
 with the quotes app. That will make it work.
 
-Run the site and check that as a mere visitor (`logout
-<http://localhost:8000/admin/logout>`_ first) you can not send comments to
+Run the site and check that as a mere visitor (logout_ first) you can not send comments to
 articles. Instead of the comment form there must be a message in blue saying
 that **Only registered users can post comments.** If you `login
 <http://localhost:8000/admin/login/>`_ and visit an article's page the comment
@@ -201,7 +202,7 @@ put content in this hidden block in the ``articles_detail.html``. Add the
 following HTML code before the script tags in the ``base.html`` in the
 ``example/comp/templates`` directory:
 
-   .. code-block:: html+django
+.. code-block:: html+django
 
     [...] around line 67, right before the first <script> tag...
 
@@ -214,7 +215,7 @@ following HTML code before the script tags in the ``base.html`` in the
 
 Add the following code to ``templates/articles/article_detail.html``:
 
-   .. code-block:: html+django
+.. code-block:: html+django
 
     [...] around line 46, right before the {% block extra_js %}...
 
@@ -226,7 +227,7 @@ And finally create the file ``only_users_can_post.html`` within the
 ``comp/templates/django_comments_xtd`` directory, with the following content
 in it:
 
-   .. code-block:: html+django
+.. code-block:: html+django
 
     <div id="only-users-can-post-{{ html_id_suffix }}">
       <p class="text-center">Only registered users can post comments. Please,
@@ -234,8 +235,7 @@ in it:
       </p>
     </div>
 
-With all the changes already done,
-`logout <http://localhost:8000/admin/logout/>`_ of the comp site and reload
+With all the changes already done, logout_ of the comp site and reload
 the article's page. You should see the message with the login link.
 
 .. image:: ../images/only-users-can-post.png

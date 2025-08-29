@@ -7,8 +7,9 @@ Change user image or avatar
 .. _Gravatar: http://gravatar.com/
 .. _django-avatar: https://github.com/grantmcconnaughey/django-avatar
 .. _django-contrib-comments: https://django-contrib-comments.readthedocs.io/
+.. _admin UI: http://localhost:8000/admin/
 
-By default django-comments-xtd uses its own template filters to fetch user profile images from Gravatar_ and put them in comments. It is a simple solution that makes the app dependant on an external service. But it is a good solution when the only confirmed record we get from the person who posted the comment is an email address. 
+By default django-comments-xtd uses its own template filters to fetch user profile images from Gravatar_ and put them in comments. It is a simple solution that makes the app dependant on an external service. But it is a good solution when the only confirmed record we get from the person who posted the comment is an email address.
 
 This page describes how to setup django-comments-xtd so that user images displayed in comments come from other sources. For such purpose, in addition to the default filters, we will use django-avatar_. Your Django project can use another application to procure user images, perhaps with a built-in solution or via a social service. Just adapt your case to the methodology exposed here.
 
@@ -22,8 +23,8 @@ Purpose
 
 This how-to will combine both solutions, template filters provided with django-comments-xtd and template tags provided with django-avatar, to fetch user images for two different type of comments, those posted by registered users and those posted by mere visitors:
 
- * Avatar images in comments posted by **non-registered users** will be fetched from Gravatar via django-comments-xtd filters, as the only record we get from those visitors is their email address.
- * On the other hand avatar images in comments posted by **registered users** will be provided by django-avatar templatetags, as django-avatar's templatetags require a user object to fetch the user's image. 
+* Avatar images in comments posted by **non-registered users** will be fetched from Gravatar via django-comments-xtd filters, as the only record we get from those visitors is their email address.
+* On the other hand avatar images in comments posted by **registered users** will be provided by django-avatar templatetags, as django-avatar's templatetags require a user object to fetch the user's image.
 
 Django-avatar will make those images available from different sources depending on how we customize the app. We can add user images directly using Django's admin interface or we can let the app fetch them via providers, from social networks or writing our own specific provider function.
 
@@ -54,23 +55,23 @@ Also change the ``comp/urls.py`` module to serve media files in development and 
     from django.conf import settings
     from django.conf.urls.static import static
 
-    [...] 
-    
+    [...]
+
     # At the bottom of the module.
     if settings.DEBUG:
         urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 
-When using HTML templates to render the comments 
+When using HTML templates to render the comments
 ================================================
 
 If your project uses django-comments-xtd HTML templates to render comments, like the Comp project's **quotes app** does, then you only have to adapt your project's HTML templates to use django-avatar.
 
 Let's go then through the following changes:
 
- * Change the ``comment_tree.html`` template.
- * Create the ``comments/preview.html`` template.
- * Create the ``django_comments_xtd/comment.html`` template (bonus).
+* Change the ``comment_tree.html`` template.
+* Create the ``comments/preview.html`` template.
+* Create the ``django_comments_xtd/comment.html`` template (bonus).
 
 
 Change the ``comment_tree.html`` template
@@ -94,7 +95,7 @@ The comp project overrides the ``comment_tree.html`` template. Let's edit it (in
 	  <img
 	    {% if item.comment.user and item.comment.user|has_avatar %}
 	      src="{% avatar_url item.comment.user 48 %}"
-	    {% else %} 
+	    {% else %}
 	      src="{{ item.comment.user_email|xtd_comment_gravatar_url }}"
 	    {% endif %}
 	    class="mr-3" height="48" width="48"
@@ -106,9 +107,9 @@ The comp project overrides the ``comment_tree.html`` template. Let's edit it (in
 Create the ``comments/preview.html`` template
 ---------------------------------------------
 
-We also want to apply the same logic to the ``comments/preview.html`` template. The preview template gets rendered when the user clicks on the preview button in the comment form. 
+We also want to apply the same logic to the ``comments/preview.html`` template. The preview template gets rendered when the user clicks on the preview button in the comment form.
 
-The ``preview.html`` template is initially served by django-contrib-comments_, but it is overriden by a copy provided from django-comments-xtd templates directory. 
+The ``preview.html`` template is initially served by django-contrib-comments_, but it is overriden by a copy provided from django-comments-xtd templates directory.
 
 For our purpose we have to modify that version, let's copy it from django-comments-xtd's templates directory into the comp project templates directory:
 
@@ -121,11 +122,11 @@ And edit the template so that the ``<div class="media">`` starts like this:
 .. code-block:: html+django
 
 	{% load avatar_tags %}
-	
+
 	[...]
 
 	      <div class="media">
-	        <img 
+	        <img
 	          {% if request.user|has_avatar %}
 	            src="{% avatar_url request.user 48 %}"
 	          {% else %}
@@ -154,7 +155,7 @@ Now edit the template and make the following changes:
 .. code-block:: html+django
 
 	{% load avatar_tags %}
-	
+
 	[...]
 
 	<div id="c{{ comment.id }}" class="media"><a name="c{{ comment.id }}"></a>
@@ -174,14 +175,14 @@ Now edit the template and make the following changes:
 Test the changes
 ----------------
 
-These changes are enough when your project uses only Django templates to render comments. 
+These changes are enough when your project uses only Django templates to render comments.
 
-Before we can test the solution, let's add an image for the admin user. Do login in the `admin UI <http://localhost:8000>`_ with user/password ``admin/admin`` and click on the avatar application. Add a squared dimensioned image to the admin user.
+Before we can test the solution, let's add an image for the admin user. Do login in the `admin UI`_ with user/password ``admin/admin`` and click on the avatar application. Add a squared dimensioned image to the admin user.
 
 Now the project is ready to test the two types of comments, a comment sent as a logged-in user and another one sent as a mere visitor:
 
- 1. While you are still logged in in the admin interface, visit the `quotes page <http://localhost:8000/quotes/>`_, click on any of the links and send a comment as the admin user. Sending a comment as a logged in user does not require comment confirmation by email. Therefore you must see already the comment posted in the page and displaying the image you have added to the avatar model using the admin interface. Let's now send a comment as a mere visitor.
- 2. `Logout <http://localhost:8000/admin/logout/>`_ from the admin interface and send another comment as a mere visitor. If you have an account in Gravatar_, use an email address of that account for the comment. This way, when you post the comment, you already know what's the image that is going to be displayed from Gravatar. Then send the comment. The email message to confirm the comment is displayed in the console. Scroll up in the console to see the plain-text part of the message and copy the confirmation URL. Then paste it in the browser's location bar to confirm the comment. Once the message is confirmed the comment appears in the quotes page. It should show the image from your Gravatar account.
+#. While you are still logged in in the admin interface, visit the `quotes page <http://localhost:8000/quotes/>`_, click on any of the links and send a comment as the admin user. Sending a comment as a logged in user does not require comment confirmation by email. Therefore you must see already the comment posted in the page and displaying the image you have added to the avatar model using the admin interface. Let's now send a comment as a mere visitor.
+#. `Logout <http://localhost:8000/admin/logout/>`_ from the admin interface and send another comment as a mere visitor. If you have an account in Gravatar_, use an email address of that account for the comment. This way, when you post the comment, you already know what's the image that is going to be displayed from Gravatar. Then send the comment. The email message to confirm the comment is displayed in the console. Scroll up in the console to see the plain-text part of the message and copy the confirmation URL. Then paste it in the browser's location bar to confirm the comment. Once the message is confirmed the comment appears in the quotes page. It should show the image from your Gravatar account.
 
 The message posted as the admin user gets the avatar image from the project's storage using django-avatar's template tag. On the other hand, the image sent as a mere visitor, comes directly from Gravatar using django-comments-xtd's template filter.
 
@@ -192,13 +193,13 @@ If your project uses the web API you have to customize :setting:`COMMENTS_XTD_AP
 
 The **articles app** of the :ref:`example-comp` uses the web API (actually, the JavaScript plugin does). We have to customize it so that avatar images for registered users are fetched using django-avatar, while avatar images for mere visitors are fetched using the standard Gravatar_ approach.
 
-The default value of :setting:`COMMENTS_XTD_API_GET_USER_AVATAR` points to the function **get_user_avatar** in ``django_comments_xtd/utils.py``. That function only uses Gravatar_ to fetch user images. 
+The default value of :setting:`COMMENTS_XTD_API_GET_USER_AVATAR` points to the function **get_user_avatar** in ``django_comments_xtd/utils.py``. That function only uses Gravatar_ to fetch user images.
 
 To acomplish it we only need to do the following:
 
- * Implement the function that fetches images' URLs.
- * Override ``COMMENTS_XTD_API_GET_USER_AVATAR``.
- * Test the changes.
+* Implement the function that fetches images' URLs.
+* Override ``COMMENTS_XTD_API_GET_USER_AVATAR``.
+* Test the changes.
 
 
 Implement the function that fetches images' URLs
@@ -206,8 +207,8 @@ Implement the function that fetches images' URLs
 
 We want to apply the following logic when fetching images' URLs:
 
- * When a registered user sends a comment, the ``comment.user`` object points to an instance of that user. There we will use **django-avatar** to fetch that uses's image URL.
- * When a mere visitor sends a comment, the ``comment.user`` object is ``None``. But we still have the ``comment.user_email`` which contains the email address of the visitor. Here we will use django-comments-xtd (which in turn defaults to Gravatar).
+* When a registered user sends a comment, the ``comment.user`` object points to an instance of that user. There we will use **django-avatar** to fetch that uses's image URL.
+* When a mere visitor sends a comment, the ``comment.user`` object is ``None``. But we still have the ``comment.user_email`` which contains the email address of the visitor. Here we will use django-comments-xtd (which in turn defaults to Gravatar).
 
 Create the module ``comp/utils.py`` with the following content:
 
@@ -228,12 +229,12 @@ Create the module ``comp/utils.py`` with the following content:
 
 If the ``comment`` has a ``user``, we return the result of the ``avatar_url`` function of django-avatar. This function goes through each of the django-avatar providers setup with `AVATAR_PROVIDERS <https://django-avatar.readthedocs.io/en/latest/#AVATAR_PROVIDERS>`_ and returns the appropriate image's URL.
 
-If on the hand the ``comment`` does not have a ``user``, we return what Gravatar has on the ``comment.user_email``. If that email address is not registered in Gravatar, it returns the default image (which you `can customize too <https://en.gravatar.com/site/implement/images/>`_, read in that page from *Default Image* on). 
+If on the hand the ``comment`` does not have a ``user``, we return what Gravatar has on the ``comment.user_email``. If that email address is not registered in Gravatar, it returns the default image (which you `can customize too <https://en.gravatar.com/site/implement/images/>`_, read in that page from *Default Image* on).
 
 Override ``COMMENTS_XTD_API_GET_USER_AVATAR``
 ---------------------------------------------
 
-We have to add a reference to our new function in the settings, to override the content of :setting:`COMMENTS_XTD_API_GET_USER_AVATAR`. Append the following to the ``comp/settings.py` module:
+We have to add a reference to our new function in the settings, to override the content of :setting:`COMMENTS_XTD_API_GET_USER_AVATAR`. Append the following to the ``comp/settings.py`` module:
 
 .. code-block:: python
 
@@ -248,8 +249,8 @@ Test the changes
 
 Now the **articles app** is ready. If you already added an avatar image for the admin user, as we did in the previous **Test the changes** section, then send two comments to any of the articles:
 
- 1. Login in as admin/admin in the `admin UI <http://localhost:8000/admin/>`_, then visit any of the `articles page <http://localhost:8000/articles/>`_ and send a comment as the admin user. See also that the image displayed in the preview corresponds to the image added to the admin user.
- 2. `Logout <http://localhost:8000/admin/logout/>`_ from the admin interface and send another comment as a mere visitor. If you have a Gravatar account, use the same email address when posting the comment. The Gravatar image associated should be displayed in the comment. 
+1. Login in as admin/admin in the `admin UI`_, then visit any of the `articles page <http://localhost:8000/articles/>`_ and send a comment as the admin user. See also that the image displayed in the preview corresponds to the image added to the admin user.
+2. `Logout <http://localhost:8000/admin/logout/>`_ from the admin interface and send another comment as a mere visitor. If you have a Gravatar account, use the same email address when posting the comment. The Gravatar image associated should be displayed in the comment.
 
 
 Conclusion

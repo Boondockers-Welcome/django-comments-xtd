@@ -246,42 +246,42 @@ Defaults to ``True``.
 **Optional**. Allow enabling/disabling commenting options on per
 **app_label.model** basis. The options available are the following:
 
- * ``allow_flagging``: Allow registered users to flag comments as inappropriate.
- * ``allow_feedback``: Allow registered users to like/dislike comments.
- * ``show_feedback``: Allow django-comments-xtd to report the list of users who
-   liked/disliked the comment. The representation of each user in the list
-   depends on the next setting :setting::`COMMENTS_XTD_API_USER_REPR`.
- * ``who_can_post``: Can be either 'all' or 'users'. When it is 'all', all
-   users can post, whether registered users or mere visitors. When it is
-   'users', only registered users can post. Read the use case
-   :ref:`ref-recipe-only-signed-in-can-comment`, for details on how to set it
-   up.
+* ``allow_flagging``: Allow registered users to flag comments as inappropriate.
+* ``allow_feedback``: Allow registered users to like/dislike comments.
+* ``show_feedback``: Allow django-comments-xtd to report the list of users who
+  liked/disliked the comment. The representation of each user in the list
+  depends on the next setting :setting::`COMMENTS_XTD_API_USER_REPR`.
+* ``who_can_post``: Can be either 'all' or 'users'. When it is 'all', all
+  users can post, whether registered users or mere visitors. When it is
+  'users', only registered users can post. Read the use case
+  :ref:`ref-recipe-only-signed-in-can-comment`, for details on how to set it
+  up.
 
 An example use:
 
-   .. code-block:: python
+.. code-block:: python
 
-       COMMENTS_XTD_APP_MODEL_OPTIONS = {
-           'blog.post': {
-               'allow_flagging': True,
-               'allow_feedback': True,
-               'show_feedback': True,
-               'who_can_post': 'users'
-           }
-       }
+    COMMENTS_XTD_APP_MODEL_OPTIONS = {
+        'blog.post': {
+            'allow_flagging': True,
+            'allow_feedback': True,
+            'show_feedback': True,
+            'who_can_post': 'users'
+        }
+    }
 
 Defaults to:
 
-   .. code-block:: python
+.. code-block:: python
 
-       COMMENTS_XTD_APP_MODEL_OPTIONS = {
-           'default': {
-               'allow_flagging': False,
-               'allow_feedback': False,
-               'show_feedback': False,
-               'who_can_post': 'all'
-           }
-       }
+    COMMENTS_XTD_APP_MODEL_OPTIONS = {
+        'default': {
+            'allow_flagging': False,
+            'allow_feedback': False,
+            'show_feedback': False,
+            'who_can_post': 'all'
+        }
+    }
 
 
 .. setting:: COMMENTS_XTD_API_USER_REPR
@@ -294,15 +294,33 @@ representation. It's used to produced the list of users who liked/disliked
 comments. By default it outputs the username, but it could perfectly return the
 full name:
 
-   .. code-block:: python
+.. code-block:: python
 
-       COMMENTS_XTD_API_USER_REPR = lambda u: u.get_full_name()
+    COMMENTS_XTD_API_USER_REPR = lambda u: u.get_full_name()
 
 Defaults to:
 
-   .. code-block:: python
+.. code-block:: python
 
-       COMMENTS_XTD_API_USER_REPR = lambda u: u.username
+    COMMENTS_XTD_API_USER_REPR = lambda u: u.username
+
+
+.. setting:: COMMENTS_XTD_API_DATETIME_FORMAT
+
+``COMMENTS_XTD_API_DATETIME_FORMAT``
+====================================
+
+**Optional**. Like global setting ``DATETIME_FORMAT``. It allows to format the ``submit_date`` retrieved using ``ReadCommentSerializer``. The given format string must be based on Django's `date formatting characters <https://docs.djangoproject.com/en/5.0/ref/templates/builtins/#std-templatefilter-date>`_. It defaults to ``settings.DATETIME_FORMAT``:
+
+.. code-block:: python
+
+    COMMENTS_XTD_API_DATETIME_FORMAT = "Y-b-d H:i:s O"
+
+Defaults to:
+
+.. code-block:: python
+
+    COMMENTS_XTD_API_USER_REPR = settings.DATETIME_FORMAT
 
 
 .. setting:: COMMENTS_XTD_API_GET_USER_AVATAR
@@ -314,15 +332,15 @@ Defaults to:
 
 **Optional**. Path to the function used by the web API to retrieve the user's image URL of the user associated with a comment. By default django-comments-xtd tries to retrieve images from Gravatar_. If you use the web API (the JavaScript plugin uses it) then you might want to write a function to provide the URL to the user's image from a comment object. You might be interested on the use case :ref:`ref-change-user-image-or-avatar`, which cover the topic in depth.
 
- .. code-block:: python
+.. code-block:: python
 
-     COMMENTS_XTD_API_GET_USER_AVATAR = "comp.utils.get_avatar_url"
+    COMMENTS_XTD_API_GET_USER_AVATAR = "comp.utils.get_avatar_url"
 
 The function used by default, **get_user_avatar** in ``django_comments_xtd/utils.py``, tries to fetch every user's image from Gravatar:
 
- .. code-block:: python
+.. code-block:: python
 
-     COMMENTS_XTD_API_GET_USER_AVATAR = "django_comments_xtd.utils.get_user_avatar"
+    COMMENTS_XTD_API_GET_USER_AVATAR = "django_comments_xtd.utils.get_user_avatar"
 
 .. setting:: COMMENTS_XTD_DEFAULT_FOLLOWUP
 

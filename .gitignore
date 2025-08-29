@@ -20,10 +20,13 @@ node_modules/
 .tox
 .cache
 .eggs
-package-lock.json
 .idea
 example/.idea
 example/env
 .pytest_cache/
 .venv
 .idea
+.python-version
+docs/fonts/
+django_comments_xtd/static/django_comments_xtd/js/coverage/
+django_comments_xtd/static/django_comments_xtd/js/django-comments-xtd-*

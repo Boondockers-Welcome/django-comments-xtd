@@ -1,6 +1,4 @@
-from __future__ import unicode_literals
 from django.conf import settings
-
 
 COMMENT_MAX_LENGTH = 3000
 
@@ -23,7 +21,7 @@ COMMENTS_XTD_MAX_THREAD_LEVEL = 0
 COMMENTS_XTD_MAX_THREAD_LEVEL_BY_APP_MODEL = {}
 
 # Default order to list comments in.
-COMMENTS_XTD_LIST_ORDER = ('thread_id', 'order')
+COMMENTS_XTD_LIST_ORDER = ("thread_id", "order")
 
 # Form class to use.
 COMMENTS_XTD_FORM_CLASS = "django_comments_xtd.forms.XtdCommentForm"
@@ -41,11 +39,11 @@ COMMENTS_XTD_THREADED_EMAILS = True
 
 # Define what commenting features a pair app_label.model can have.
 COMMENTS_XTD_APP_MODEL_OPTIONS = {
-    'default': {
-        'who_can_post': 'all',  # Valid values: "users", "all"
-        'allow_flagging': False,
-        'allow_feedback': False,
-        'show_feedback': False,
+    "default": {
+        "who_can_post": "all",  # Valid values: "users", "all"
+        "allow_flagging": False,
+        "allow_feedback": False,
+        "show_feedback": False,
     }
 }
 
@@ -57,6 +55,11 @@ def username(u):
 
 
 COMMENTS_XTD_API_USER_REPR = username
+
+
+# Defines the datetime format string that will be used to render the
+# `submit_date` field, when using the `ReadCommentSerializer`.
+COMMENTS_XTD_API_DATETIME_FORMAT = settings.DATETIME_FORMAT
 
 
 # Function to obtain comment's avatar. Receives the comment as a parameter.

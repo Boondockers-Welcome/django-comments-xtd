@@ -1,5 +1,107 @@
 # Change Log
 
+## [2.10.9] - 2025-08-12
+
+* Opens up the range of supported djangorestframework versions to `>=3.12, <3.17`.
+
+## [2.10.8] - 2025-08-06
+
+* Fixes [issue-465](https://github.com/danirus/django-comments-xtd/issues/465): Convert view `preview_user_avatar` in a Class-based-view that inherits from `DefaultsMixin`, so that it returns a JSON response.
+
+## [2.10.7] - 2025-07-10
+
+* Fixes [issue-462](https://github.com/danirus/django-comments-xtd/issues/462): function `get_app_model_options` did not work as expected when passing commenting options only through the `"default"` key.
+
+## [2.10.6] - 2025-04-07
+
+* Fixes [issue 458](https://github.com/danirus/django-comments-xtd/issues/458) two f-string that were uncompatible with Python < 3.12.
+* Rewrites function `get_app_model_options`.
+* New tests to cover latest changes.
+* Tox now runs tests in both, Python 3.10 and Python 3.13.
+
+## [2.10.5] - 2025-03-22
+
+* Removes external dependencies from `django_comments_xtd/__init__.py`.
+* Opens up the range of supported Django versions to "Django>=4,<6".
+* Uses `pyproject.toml` to replace `setup.py`.
+* Updates `tox.ini`.
+* Build JavaScript plugin during CI.
+* Replace flake8 with ruff, and adopt pre-commit rules.
+* Many stylistic changes after applying ruff.
+
+## [2.10.4] - 2025-03-01
+
+* Updates the version number of the JavaScript plugin to the version of the Python package.
+
+## [2.10.3] - 2025-02-28
+
+* Fixes [issue 451](https://github.com/danirus/django-comments-xtd/issues/451): Exceeding the `COMMENT_MAX_LENGTH` does not reflect in the UI, either when using django templates or when using the JavaScript plugin.
+
+## [2.10.2] - 2025-01-07
+
+* Add reminder about template loading order to the documentation.
+* Fix template name `comment_tree.html` in doc strings and the documentation.
+* Fix variable template name in `form.html`, in custom example site.
+* Remove duplicated code.
+
+## [2.10.1] - 2024-11-28
+
+* Updated French translation.
+* Updated battery of tests to check compatibility with Django 5.1.
+* GHA: Remove secret from PyPI, as it is now a trusted repository.
+* Add support for light/dark color scheme in tutorial.
+* Updated example projects: add support for light/dark color schemes.
+* Updated dependencies in package.json.
+* Updated templates `comments/posted.html`, `comments/preview.html`, and `django_comments_xtd/moderated.html`.
+* Docs: Use Bootstrap icon `chat-text-fill.svg` as project's icon.
+* Docs: Updated Tutorial. Fixes script example.
+* Docs: Use sphinx-nefertiti v0.5 and sphinx-colorschemed-images.
+
+## [2.10.0] - 2024-05-02
+
+ * Add ordering filter to the CommentList API class.
+ * Include django-rest-framework v3.15 in tests and example sites.
+ * Update tutorial in the documentation.
+ * Following templates have changed:
+   - `comments/flag.html`
+   - `comments/form.html`
+   - `django_comments_xtd/comment_tree.html`
+   - `django_comments_xtd/dislike.html`
+   - `django_comments_xtd/like.html`
+   - `django_comments_xtd/reply.html`
+
+## [2.9.13] - 2023-12-22
+
+ * Fixes issue related to missing frontend files within the package distribution.
+
+## [2.9.12] - 2023-12-22
+
+ * Fixes [issue 407](<https://github.com/danirus/django-comments-xtd/issues/377): `ReadCommentSerializer.get_submit_date` does not properly use `DATETIME_FORMAT` setting.
+ * Adds the new setting `COMMENTS_XTD_API_DATETIME_FORMAT`.
+
+## [2.9.11] - 2023-12-11
+
+ * Adds support for Django 5.0.
+
+## [2.9.10] - 2023-07-08
+
+ * Updates ReactJS plugin. It has been rewritten to use React Hooks.
+ * Add tests to cover over 90% functionality of the JavaScript plugin.
+ * Replaces Webpack with Rollup to create the JavaScript bundle.
+ * Updates the UI to use Bootstrap 5.3.0.
+ * Updates the demo sites to Bootstrap 5.3.0.
+ * Extends python tests to Django 4.2 using Python 3.11.
+ * Updates the docs.
+
+## [2.9.9] - 2022-10-26
+
+ * Extends compatibility to django-rest-framework v3.14.
+
+## [2.9.8] - 2022-09-18
+
+ * Fixes [issue 377](https://github.com/danirus/django-comments-xtd/issues/377): content_object is missing in followup notification. View `notify_comment_followers` has been updated to include `content_object` in the context of templates it uses: `email_followup_comment.txt` and `email_followup_comment.html`.
+ * Update translation files to the latest strings found in templates. Next step is to include appropriate translations. See [PR #379](https://github.com/danirus/django-comments-xtd/pull/379).
+
 ## [2.9.7] - 2022-07-08
 
   * Allows to customize the json object returned by the `get_commentbox_props` template tag. Define the new setting `COMMENTS_XTD_COMMENTBOX_CLASS` as the string path to the class that will return the JSON object. It defaults to the class `django_comments_xtd.api.frontend.CommentBoxDriver`.
